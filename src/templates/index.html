@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+
+  </head>
+  <body>
+   
+    <div class="container">
+        <h2>Lenovo Outlet</h2>
+        <table id="table_id" class="display">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Memory</th>
+                    <th>HDD</th>
+                    
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Memory</th>
+                    <th>HDD</th>            
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+   
+
+    
+   
+    <!-- jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.material.min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            $('#table_id').DataTable({
+                "paging":   true,
+                "ordering": true,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "/data"
+            });
+        });
+    </script>
+  
+  </body>
+
+</html>

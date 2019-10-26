@@ -14,9 +14,14 @@ total_refurbished = 0
 new_items = 0
 numbers_re = re.compile(r"[0-9]+")
 items_per_page = 8
-
+DATA_FILE = 'laptop.json'
 
 class DataManager():
+
+    def __init__(self):
+        self.received = False
+        self.data = None
+
 
     def __get_total_refurbished_latops_count(self):
         '''
@@ -119,22 +124,85 @@ class DataManager():
                 continue
 
         if all_laptops:
+            self.received = True
             return all_laptops
         else:
             return False
 
 
-dmanager = DataManager()
+    def fetch_data_from_lenovo_outlet(self,update=False):
+        if not self.received:
+            if not self.data:
+                self.data = self.get_all_laptops()
+                self.save_json_file()
+        else:
+            return self.data
 
+
+
+    def save_json_file(self,data=None,update=False):
+        with open(DATA_FILE,'w') as jfile:
+            if self.data and not data:
+                json.dump(self.data,jfile)
+            else:
+                json.dump(data,jfile)
+
+
+    def get_table_data(self):
+        '''
+            reads the json file and returns if the it is not empty
+            idea is if there is file we can use it to show the data and in 
+            background we can update the data
+        '''
+        data = []
+        records = 0
+        jsondata = {
+            "draw": 1,
+            "recordsTotal": 0,
+            "recordsFiltered": 0,
+            "data" : []
+        }
+        try:
+            with open(DATA_FILE,'r') as jfile:
+                laptops = json.load(jfile)
+                for i in laptops:
+                    records += 1
+                    t  = []
+                    for j in laptops[i]:
+                        t.append(laptops[i][j])
+                    data.append(t)
+            
+            jsondata['recordsTotal'] = records
+            jsondata['recordsFiltered'] = records
+            jsondata['data'] = data
+            return jsondata
+        except Exception as e:
+            print(e)
+            return None
+
+
+dmanager = DataManager()
+# dmanager.get_table_data()
+
+
+from flask import render_template
 
 app = Flask(__name__)
-@app.route("/")
-def get_data():
-        received = False 
-        if not received:
-                received = dmanager.get_all_laptops()
 
-        return json.dumps(received)
+
+@app.route("/")
+def hello():
+    return render_template('index.html')
+
+
+@app.route("/data")
+def get_data(): 
+        return json.dumps(dmanager.get_table_data())
+
+
+@app.route("/update")
+def update_data():
+    return json.dumps(dmanager.fetch_data_from_lenovo_outlet(update=True))
 
 
 if __name__ == "__main__":
